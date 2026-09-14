@@ -1051,18 +1051,6 @@ export const kiloScenarios: Scenario[] = [
     }))
     .status(400),
   http.protected
-    .post("/telemetry/capture", "telemetry.capture")
-    .at((ctx) => ({
-      path: "/telemetry/capture",
-      headers: ctx.headers(),
-      body: { event: "httpapi_exercise", properties: { source: "httpapi" } },
-    }))
-    .json(200, (body) => check(body === true, "telemetry capture should return true")),
-  http.protected
-    .post("/telemetry/setEnabled", "telemetry.setEnabled")
-    .at((ctx) => ({ path: "/telemetry/setEnabled", headers: ctx.headers(), body: { enabled: true } }))
-    .json(200, (body) => check(body === true, "telemetry enabled update should return true")),
-  http.protected
     .post("/instance/reload", "instance.reload")
     .skipValidAuthProbe()
     .mutating()

@@ -89,19 +89,6 @@ vi.mock("../classic-auto-complete/AutocompleteInlineCompletionProvider", () => {
   return { AutocompleteInlineCompletionProvider }
 })
 
-vi.mock("../classic-auto-complete/AutocompleteTelemetry", () => {
-  class AutocompleteTelemetry {}
-  return { AutocompleteTelemetry }
-})
-
-vi.mock("@roo-code/telemetry", () => ({
-  TelemetryService: {
-    instance: {
-      captureEvent: vi.fn(),
-    },
-  },
-}))
-
 vi.mock("../../../core/config/ContextProxy", () => {
   const state: Record<string, any> = {}
 

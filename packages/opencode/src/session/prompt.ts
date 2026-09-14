@@ -1585,15 +1585,9 @@ export const layer = Layer.effect(
           latest.userMessage &&
           latest.assistantMessage &&
           KiloSessionMessageOrder.compare(latest.userMessage, latest.assistantMessage) < 0
-        // kilocode_change end
-        // kilocode_change start - carry local review command marker into LLM telemetry
-        const telemetry =
-          KiloSessionProcessor.extractReviewTelemetry(
-            msgs.findLast((m) => m.info.role === "user" && m.info.id === lastUser.id)?.parts ?? [],
-          ) ?? KiloSessionProcessor.extractSuggestionReviewTelemetry(lastAssistantMsg?.parts ?? [])
-        // kilocode_change end
+         // kilocode_change end
 
-        // Some providers return "stop" even when the assistant message contains
+         // Some providers return "stop" even when the assistant message contains
         // tool calls. Keep the loop running so tool results can be sent back to
         // the model, but ignore cleanup-marked interrupted orphans.
         const hasToolCalls =
@@ -1748,14 +1742,13 @@ export const layer = Layer.effect(
           msg.time.completed = Date.now()
           yield* sessions.updateMessage(msg)
         })
-        const handle = yield* processor
-          .create({
-            assistantMessage: msg,
-            sessionID,
-            model,
-            telemetry, // kilocode_change
-            snapshotInitialization: input.snapshotInitialization, // kilocode_change
-          })
+         const handle = yield* processor
+           .create({
+             assistantMessage: msg,
+             sessionID,
+             model,
+             snapshotInitialization: input.snapshotInitialization, // kilocode_change
+           })
           .pipe(Effect.onInterrupt(() => finalize))
 
         const outcome: "break" | "continue" = yield* Effect.gen(function* () {
@@ -2509,7 +2502,6 @@ export const layer = Layer.effect(
       // kilocode_change end
 
       const templateParts = yield* resolvePromptParts(template)
-      KiloSessionProcessor.markReviewTelemetry(templateParts, input.command) // kilocode_change - mark review commands for completion telemetry
       const inputFiles = new Set(
         input.parts?.filter((part) => new URL(part.url).protocol === "file:").map((part) => fileURLToPath(part.url)),
       )

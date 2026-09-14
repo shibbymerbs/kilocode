@@ -51,7 +51,6 @@ The VS Code extension spawns or connects to a `kilo serve` process and communica
 | `packages/kilo-vscode/` | `kilo-code` | **This package.** VS Code extension. |
 | `packages/kilo-gateway/` | `@kilocode/kilo-gateway` | Auth (device flow), AI provider routing (OpenRouter), Kilo API integration (profile, balance, teams) |
 | `packages/kilo-ui/` | `@kilocode/kilo-ui` | SolidJS component library (40+ components, built on `@kobalte/core`). Shared by this extension's webview and docs screenshot stories |
-| `packages/kilo-telemetry/` | `@kilocode/kilo-telemetry` | PostHog analytics + OpenTelemetry tracing for the CLI |
 | `packages/kilo-i18n/` | `@kilocode/kilo-i18n` | Translation strings (16 languages) |
 | `packages/kilo-docs/` | `@kilocode/kilo-docs` | Documentation site (Next.js + Markdoc) |
 

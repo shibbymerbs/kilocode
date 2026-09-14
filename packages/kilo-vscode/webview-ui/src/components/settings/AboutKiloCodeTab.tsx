@@ -237,29 +237,6 @@ const AboutKiloCodeTab: Component<AboutKiloCodeTabProps> = (props) => {
         </p>
       </div>
 
-      {/* Telemetry */}
-      <div style={sectionStyle}>
-        <h4 style={headingStyle}>{language.t("settings.aboutKiloCode.telemetry.title")}</h4>
-        <p
-          style={{
-            "font-size": "var(--kilo-font-size-12)",
-            color: "var(--vscode-descriptionForeground)",
-            margin: "0 0 12px 0",
-            "line-height": "1.5",
-          }}
-        >
-          {language.t("settings.aboutKiloCode.telemetry.description")}
-        </p>
-        <Button
-          variant="secondary"
-          size="small"
-          onClick={() => vscode.postMessage({ type: "openVSCodeSettings", query: "telemetry.telemetryLevel" })}
-        >
-          <Icon name="settings-gear" />
-          {language.t("settings.aboutKiloCode.telemetry.openSettings")}
-        </Button>
-      </div>
-
       {/* CLI Server */}
       <div style={sectionStyle}>
         <h4 style={headingStyle}>{language.t("settings.aboutKiloCode.cliServer")}</h4>

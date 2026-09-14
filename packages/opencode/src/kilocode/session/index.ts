@@ -62,7 +62,7 @@ export namespace KiloSession {
   }
 
   // ---------------------------------------------------------------------------
-  // Per-session platform override (telemetry attribution)
+  // Per-session platform override (gateway attribution)
   // ---------------------------------------------------------------------------
 
   const overrides = new Map<string, string>()

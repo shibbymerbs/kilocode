@@ -9,10 +9,7 @@ import { ProviderV2 } from "@opencode-ai/core/provider"
 import { Array as Arr, Effect, Layer, Record, Result, Context, Schema } from "effect"
 import { errorMessage } from "@/util/error" // kilocode_change
 
-// kilocode_change start
-import { Telemetry } from "@kilocode/kilo-telemetry"
-import { ModelCache } from "./model-cache"
-// kilocode_change end
+import { ModelCache } from "./model-cache" // kilocode_change
 
 const When = Schema.Struct({
   key: Schema.String,
@@ -231,18 +228,7 @@ const layer: Layer.Layer<Service, never, Auth.Service | Plugin.Service | ModelCa
         })
       }
 
-      // kilocode_change start - Update telemetry identity on Kilo auth
-      if (input.providerID === "kilo") {
-        const info = yield* auth.get(input.providerID)
-        if (info) {
-          const token = info.type === "oauth" ? info.access : info.type === "api" ? info.key : null
-          const accountId = info.type === "oauth" ? info.accountId : undefined
-          yield* Effect.promise(() => Telemetry.updateIdentity(token, accountId))
-        }
-      }
-      Telemetry.trackAuthSuccess(input.providerID)
-      yield* cache.clear(input.providerID)
-      // kilocode_change end
+      yield* cache.clear(input.providerID) // kilocode_change
     })
 
     return Service.of({ methods, authorize, callback })

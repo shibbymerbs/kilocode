@@ -354,7 +354,6 @@ export class AgentManagerProvider implements Disposable {
       return
     }
     this.log("Opening Agent Manager panel")
-    this.host.capture("Agent Manager Opened", { source: PLATFORM })
     const panel = this.host.openPanel({
       onBeforeMessage: (msg) => this.onMessage(msg),
       worktreeDirectories: () => this.getWorktreeDirectories(),
@@ -685,10 +684,6 @@ export class AgentManagerProvider implements Disposable {
     }
 
     if (m.type === "abort") {
-      this.host.capture("Agent Manager Session Stopped", {
-        source: PLATFORM,
-        sessionId: m.sessionID,
-      })
       return msg
     }
 
@@ -937,7 +932,6 @@ export class AgentManagerProvider implements Disposable {
         getWorktreeManager: () => this.getWorktreeManager(),
         getStateManager: () => this.getStateManager(),
         postToWebview: (message) => this.postToWebview(message),
-        capture: (event, properties) => this.host.capture(event, properties),
         pushState: () => this.pushState(),
         log: (...args) => this.log(...args),
       },
@@ -962,11 +956,6 @@ export class AgentManagerProvider implements Disposable {
         status: "error",
         message: "Not connected to CLI backend",
         worktreeId,
-      })
-      this.host.capture("Agent Manager Session Error", {
-        source: PLATFORM,
-        error: "Not connected to CLI backend",
-        context: "createSession",
       })
       return null
     }
@@ -1004,11 +993,6 @@ export class AgentManagerProvider implements Disposable {
         status: "error",
         message: `Failed to create session: ${err}`,
         worktreeId,
-      })
-      this.host.capture("Agent Manager Session Error", {
-        source: PLATFORM,
-        error: err,
-        context: "createSession",
       })
       return null
     }
@@ -1107,7 +1091,6 @@ export class AgentManagerProvider implements Disposable {
         notifyReady: (sid, result, wid) => this.notifyWorktreeReady(sid, result, wid),
         push: () => this.pushState(),
         post: (msg) => this.postToWebview(msg as unknown as AgentManagerOutMessage),
-        capture: (event, props) => this.host.capture(event, props),
         log: (...args) => this.log(...args),
         error: (msg) => this.host.showError(msg),
       },
@@ -1475,7 +1458,6 @@ export class AgentManagerProvider implements Disposable {
       stopDiffs: (path, orphaned) => {
         if (this.diffs.shouldStopForWorktree(path, orphaned)) this.diffs.stop()
       },
-      capture: (event, props) => this.host.capture(event, props),
       autoName: () => this.host.autoBranchNaming(),
       client: () => this.connectionService.getClient(),
       acquirePtyCleanup: (directory) => this.acquirePtyCleanup(directory),
@@ -1809,7 +1791,6 @@ export class AgentManagerProvider implements Disposable {
         registerWorktreeSession: (sid, dir) => this.registerWorktreeSession(sid, dir),
         registerSession: (session) => this.panel?.sessions.registerSession(session),
         notifyReady: (sid, result, wid) => this.notifyWorktreeReady(sid, result, wid),
-        capture: (event, props) => this.host.capture(event, props),
         log: (...args) => this.log(...args),
       },
       sessionId,

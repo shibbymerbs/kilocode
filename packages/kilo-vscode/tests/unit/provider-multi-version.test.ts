@@ -67,7 +67,6 @@ describe("multi-version provisioning", () => {
       notifyReady: mock(() => {}),
       sessions: { register: mock(() => {}) },
       promptName: mock(() => {}),
-      capture: mock(() => {}),
       error: mock(() => {}),
     } as unknown as MultiVersionHost
 
