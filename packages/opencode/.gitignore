@@ -3,6 +3,8 @@ dist
 dist-*
 gen
 app.log
+test-results
+test-output.log
 script/build-*.ts
 temporary-*.md
 .artifacts
