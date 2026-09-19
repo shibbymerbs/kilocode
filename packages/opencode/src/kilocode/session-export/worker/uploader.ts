@@ -6,7 +6,7 @@ import { readFile } from "node:fs/promises"
 
 export type UploaderDeps = {
   storage: Storage
-  endpoint: string
+  endpoint: string | undefined
   fetch: (input: string, init: RequestInit) => Promise<Response>
   reportTelemetry: (msg: Extract<FromWorker, { kind: "telemetry" }>) => void
   agentVersion: string
@@ -25,6 +25,7 @@ export class Uploader {
   private next = 0
 
   constructor(private readonly deps: UploaderDeps) {
+    if (!this.deps.endpoint) return
     this.periodic = setInterval(() => this.scheduleFlush("periodic"), Config.flushIntervalMs)
     this.periodic?.unref?.()
     this.scheduleFlush("startup")
@@ -47,6 +48,7 @@ export class Uploader {
   }
 
   async flush(_reason: string): Promise<void> {
+    if (!this.deps.endpoint) return
     if (this.active) {
       this.requested = true
       return this.active
@@ -67,6 +69,8 @@ export class Uploader {
   }
 
   private async drain(): Promise<void> {
+    const endpoint = this.deps.endpoint
+    if (!endpoint) return
     let rows: ReturnType<Storage["pendingEvents"]> = []
     try {
       while (true) {
@@ -109,7 +113,7 @@ export class Uploader {
         }
         const body = JSON.stringify(batch)
         await this.throttle()
-        const res = await this.deps.fetch(this.deps.endpoint, {
+        const res = await this.deps.fetch(endpoint, {
           method: "POST",
           headers: await headers({
             rows,

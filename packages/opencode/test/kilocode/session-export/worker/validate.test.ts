@@ -6,11 +6,11 @@ describe("session export worker validation", () => {
     expect(parseMessage({ kind: "init", dbPath: 42 })).toBeUndefined()
   })
 
-  test("accepts init messages with custom endpoint opt-in", () => {
-    expect(parseMessage({ kind: "init", dbPath: ":memory:", allowCustomEndpoint: true })).toEqual({
+  test("accepts init messages with an explicit endpoint", () => {
+    expect(parseMessage({ kind: "init", dbPath: ":memory:", endpoint: "http://127.0.0.1:8787/batch" })).toEqual({
       kind: "init",
       dbPath: ":memory:",
-      allowCustomEndpoint: true,
+      endpoint: "http://127.0.0.1:8787/batch",
     })
   })
 
