@@ -69,7 +69,6 @@ Turborepo + Bun workspaces. The packages you'll work with most:
 | `packages/sdk/js/` | `@kilocode/sdk` | Auto-generated TypeScript SDK (client for the server API). Do not edit `src/gen/` by hand. |
 | `packages/kilo-vscode/` | `kilo-code` | VS Code extension with sidebar chat + Agent Manager. See its own `AGENTS.md` for details. |
 | `packages/kilo-gateway/` | `@kilocode/kilo-gateway` | Kilo auth, provider routing, API integration |
-| `packages/kilo-telemetry/` | `@kilocode/kilo-telemetry` | PostHog analytics + OpenTelemetry |
 | `packages/kilo-i18n/` | `@kilocode/kilo-i18n` | Internationalization / translations |
 | `packages/kilo-ui/` | `@kilocode/kilo-ui` | SolidJS component library shared by the extension webview and docs screenshot stories |
 | `packages/util/` | `@opencode-ai/util` | Shared utilities (error, path, retry, slug, etc.) |

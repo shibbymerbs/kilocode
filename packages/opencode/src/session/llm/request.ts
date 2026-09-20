@@ -24,7 +24,7 @@ import {
   HEADER_MACHINEID,
   HEADER_TASKID,
 } from "@kilocode/kilo-gateway"
-import { Identity } from "@kilocode/kilo-telemetry"
+import { getMachineId } from "@/kilocode/machine-id"
 import { KiloSession } from "@/kilocode/session"
 import { stripInternalOptions } from "@/kilocode/agent/options"
 import { KilocodeSystemPrompt } from "@/kilocode/system-prompt"
@@ -183,7 +183,7 @@ export const prepare = Effect.fn("LLMRequestPrep.prepare")(function* (input: Pre
     ? Effect.promise(() => getKiloProjectId().catch(() => undefined))
     : Effect.succeed(undefined)
   const machineId = yield* isKilo
-    ? Effect.promise(() => Identity.getMachineId().catch(() => undefined))
+    ? Effect.promise(() => getMachineId().catch(() => undefined))
     : Effect.succeed(undefined)
   const parent = input.parentSessionID ?? KiloSession.resolveParent(input.sessionID)
   // kilocode_change end

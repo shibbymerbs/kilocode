@@ -1,16 +1,17 @@
-export const defaultEndpoint = "https://supermassive-black-hole.kiloapps.io/v1/session-export/batch"
-
-const hosts = new Set(["supermassive-black-hole.kiloapps.io"])
-
-export function resolveEndpoint(opts: { endpoint?: string; env?: string; allowCustom?: boolean }): string {
-  const endpoint = opts.endpoint ?? opts.env ?? defaultEndpoint
-  if (opts.allowCustom) return endpoint
+export function resolveEndpoint(opts: { endpoint?: string; env?: string }): string | undefined {
+  const endpoint = opts.endpoint ?? opts.env
+  if (!endpoint) return undefined
   try {
     const url = new URL(endpoint)
-    if (url.protocol !== "https:") return defaultEndpoint
-    if (!hosts.has(url.hostname)) return defaultEndpoint
-    return endpoint
+    if (url.protocol === "https:") return endpoint
+    if (url.protocol === "http:" && isLoopback(url.hostname)) return endpoint
+    return undefined
   } catch {
-    return defaultEndpoint
+    return undefined
   }
+}
+
+function isLoopback(host: string): boolean {
+  const bare = host.replace(/^\[|\]$/g, "")
+  return bare === "localhost" || bare === "127.0.0.1" || bare === "::1"
 }

@@ -93,6 +93,29 @@ describe("Uploader", () => {
     expect(storage.pendingEvents({ now: Date.now(), limitBytes: 1_000_000 })).toEqual([])
   })
 
+  test("without an endpoint, never calls fetch and keeps rows pending", async () => {
+    let called = false
+    const uploader = new Uploader({
+      storage,
+      endpoint: undefined,
+      fetch: async () => {
+        called = true
+        return new Response("", { status: 204 })
+      },
+      reportTelemetry: () => {},
+      agentVersion: "v0",
+      surface: "test",
+    })
+
+    await uploader.flush("test")
+    uploader.scheduleFlush("event_persisted")
+    await new Promise((resolve) => setTimeout(resolve, 20))
+    uploader.dispose()
+
+    expect(called).toBe(false)
+    expect(storage.pendingEvents({ now: Date.now(), limitBytes: 1_000_000 }).length).toBe(1)
+  })
+
   test("sends anonymous id with all export headers when auth token is absent", async () => {
     const calls: Array<{ init: RequestInit }> = []
     const uploader = new Uploader({

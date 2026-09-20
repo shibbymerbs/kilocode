@@ -10,7 +10,6 @@ import { KiloGatewayPaths } from "../../../src/kilocode/server/httpapi/groups/ki
 import { KilocodePaths } from "../../../src/kilocode/server/httpapi/groups/kilocode"
 import { MemoryPaths } from "../../../src/kilocode/server/httpapi/groups/memory"
 import { NetworkPaths } from "../../../src/kilocode/server/httpapi/groups/network"
-import { TelemetryPaths } from "../../../src/kilocode/server/httpapi/groups/telemetry"
 import { ExperimentalPaths } from "../../../src/server/routes/instance/httpapi/groups/experimental"
 import { SessionPaths } from "../../../src/server/routes/instance/httpapi/groups/session"
 import { PublicApi } from "../../../src/server/routes/instance/httpapi/public"
@@ -171,8 +170,6 @@ describe("Kilo PublicApi OpenAPI contract", () => {
       { method: "get", path: NetworkPaths.list },
       { method: "post", path: NetworkPaths.reply },
       { method: "post", path: NetworkPaths.reject },
-      { method: "post", path: TelemetryPaths.capture },
-      { method: "post", path: TelemetryPaths.setEnabled },
       { method: "get", path: ConfigConsolePaths.sources },
       { method: "get", path: ConfigConsolePaths.effective },
       { method: "get", path: ConfigConsolePaths.rules },

@@ -6,7 +6,6 @@ export type ToWorker =
       dbPath: string
       agentVersion?: string
       endpoint?: string
-      allowCustomEndpoint?: boolean
       surface?: string
       anonId?: string
     }

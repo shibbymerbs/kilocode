@@ -63,7 +63,6 @@ function environment(home: string, url: string, opts: { plugin?: string; resume?
     KILO_PURE: "false",
     KILO_DISABLE_DEFAULT_PLUGINS: "true",
     KILO_EXPERIMENTAL_BACKGROUND_SUBAGENTS: "true",
-    KILO_TELEMETRY_LEVEL: "off",
     KILO_AUTO_SHARE: "false",
     KILO_NO_DAEMON: opts.daemon ? "" : "1",
     KILO_PARENT_PID: "",

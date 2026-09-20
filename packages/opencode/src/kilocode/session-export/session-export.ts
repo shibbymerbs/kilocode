@@ -32,7 +32,10 @@ const instances = new Map<string, Instance>()
 
 const maxRespawns = 3
 
-export const enabled = false
+// Session export is opt-in: set KILO_SESSION_EXPORT=1 to capture sessions
+// into the local store. Uploads only go to an explicitly configured
+// endpoint (KILO_SESSION_EXPORT_INGEST) — https anywhere, http on loopback.
+export const enabled = process.env.KILO_SESSION_EXPORT === "1" || process.env.KILO_SESSION_EXPORT === "true"
 
 export const init = (opts: {
   agentVersion: string

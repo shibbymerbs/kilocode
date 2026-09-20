@@ -32,7 +32,6 @@ import type { AutocompleteServiceSettings } from "../AutocompleteServiceManager"
 import { postprocessAutocompleteSuggestion } from "./uselessSuggestionFilter"
 import { shouldSkipAutocomplete } from "./contextualSkip"
 import { FileIgnoreController } from "../shims/FileIgnoreController"
-import { AutocompleteTelemetry } from "./AutocompleteTelemetry"
 import {
   autocompleteScope,
   getNotebookContext,
@@ -137,7 +136,6 @@ export class AutocompleteInlineCompletionProvider implements vscode.InlineComple
   private contextService: ContextRetrievalService | null = null
   private debounceDelayMs: number = INITIAL_DEBOUNCE_DELAY_MS
   private latencyHistory: number[] = []
-  private telemetry: AutocompleteTelemetry | null
   /** Information about the last suggestion shown to the user */
   private lastSuggestion: LastSuggestionInfo | null = null
   /** Circuit breaker / exponential backoff for API errors */
@@ -154,10 +152,8 @@ export class AutocompleteInlineCompletionProvider implements vscode.InlineComple
     costTrackingCallback: CostTrackingCallback,
     getSettings: () => AutocompleteServiceSettings | null,
     workspacePath: string,
-    telemetry: AutocompleteTelemetry | null = null,
     onFatalError?: (status: number | null) => void,
   ) {
-    this.telemetry = telemetry
     this.connectionService = connectionService
     this.costTrackingCallback = costTrackingCallback
     this.getSettings = getSettings
@@ -183,7 +179,6 @@ export class AutocompleteInlineCompletionProvider implements vscode.InlineComple
     this.recentlyEditedTracker = new RecentlyEditedTracker(ide)
 
     this.acceptedCommand = vscode.commands.registerCommand(INLINE_COMPLETION_ACCEPTED_COMMAND, () => {
-      this.telemetry?.captureAcceptSuggestion(this.lastSuggestion?.length)
       vscode.commands.executeCommand("setContext", "kilo-code.new.autocomplete.hasSuggestions", false)
     })
   }
@@ -265,7 +260,6 @@ export class AutocompleteInlineCompletionProvider implements vscode.InlineComple
     languageId?: string,
   ): FillInAtCursorSuggestion {
     if (!suggestionText) {
-      this.telemetry?.captureSuggestionFiltered("empty_response", telemetryContext)
       return { text: "", scope, prefix, suffix }
     }
 
@@ -281,7 +275,6 @@ export class AutocompleteInlineCompletionProvider implements vscode.InlineComple
       return { text: processedText, scope, prefix, suffix }
     }
 
-    this.telemetry?.captureSuggestionFiltered("filtered_by_postprocessing", telemetryContext)
     return { text: "", scope, prefix, suffix }
   }
 
@@ -327,7 +320,6 @@ export class AutocompleteInlineCompletionProvider implements vscode.InlineComple
       controller.abort()
     }
     this.fimAbortControllers.clear()
-    this.telemetry?.dispose()
     this.contextService?.dispose()
     this.contextService = null
     this.recentlyVisitedRangesService.dispose()
@@ -370,8 +362,6 @@ export class AutocompleteInlineCompletionProvider implements vscode.InlineComple
       modelId: this.contextProvider.modelId,
       provider: getAutocompleteModelById(this.contextProvider.modelId).provider,
     }
-
-    this.telemetry?.captureSuggestionRequested(telemetryContext)
 
     if (!hasValidCredentials(this.connectionService)) {
       // bail if no valid API credentials configured
@@ -439,13 +429,9 @@ export class AutocompleteInlineCompletionProvider implements vscode.InlineComple
           ...telemetryContext,
           length: matchingResult.text.length,
         }
-        this.telemetry?.captureCacheHit(matchingResult.matchType, telemetryContext, matchingResult.text.length)
-        this.telemetry?.startVisibilityTracking(matchingResult.fillInAtCursor, "cache", telemetryContext)
         vscode.commands.executeCommand("setContext", "kilo-code.new.autocomplete.hasSuggestions", true)
         return stringToInlineCompletions(matchingResult.text, position)
       }
-
-      this.telemetry?.cancelVisibilityTracking() // No suggestion to show - cancel any pending visibility tracking
 
       // Only skip new LLM requests during mid-word typing or at end of statement
       // Cache lookups above are still allowed
@@ -466,11 +452,7 @@ export class AutocompleteInlineCompletionProvider implements vscode.InlineComple
           ...telemetryContext,
           length: cachedResult.text.length,
         }
-        this.telemetry?.captureLlmSuggestionReturned(telemetryContext, cachedResult.text.length)
-        this.telemetry?.startVisibilityTracking(cachedResult.fillInAtCursor, "llm", telemetryContext)
         vscode.commands.executeCommand("setContext", "kilo-code.new.autocomplete.hasSuggestions", true)
-      } else {
-        this.telemetry?.cancelVisibilityTracking() // No suggestion to show - cancel any pending visibility tracking
       }
 
       return stringToInlineCompletions(cachedResult?.text ?? "", position)
@@ -617,16 +599,6 @@ export class AutocompleteInlineCompletionProvider implements vscode.InlineComple
 
       const latencyMs = performance.now() - startTime
 
-      this.telemetry?.captureLlmRequestCompleted(
-        {
-          latencyMs,
-          cost: result.cost,
-          inputTokens: result.inputTokens,
-          outputTokens: result.outputTokens,
-        },
-        telemetryContext,
-      )
-
       // Record latency for adaptive debounce delay
       this.recordLatency(latencyMs)
 
@@ -643,13 +615,6 @@ export class AutocompleteInlineCompletionProvider implements vscode.InlineComple
       if (controller.signal.aborted) return
 
       const latencyMs = performance.now() - startTime
-      this.telemetry?.captureLlmRequestFailed(
-        {
-          latencyMs,
-          error: error instanceof Error ? error.message : String(error),
-        },
-        telemetryContext,
-      )
 
       // Update circuit breaker / backoff state based on the error kind
       const kind = this.backoff.failure(error)

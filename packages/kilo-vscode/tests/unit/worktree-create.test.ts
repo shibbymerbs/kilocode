@@ -30,7 +30,6 @@ describe("createWorktreeOnDisk", () => {
       getWorktreeManager: () => new WorktreeManager(root, () => {}),
       getStateManager: () => state,
       postToWebview: (message: AgentManagerOutMessage) => messages.push(message),
-      capture: () => {},
       pushState: () => {},
       log: () => {},
     } as unknown as CreateWorktreeOnDiskContext

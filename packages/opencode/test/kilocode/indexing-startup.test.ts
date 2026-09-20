@@ -88,7 +88,7 @@ const error = new Error("test indexing initialization failed")
 function inline(directory: string, root: string, hooks: IndexingWorker.Hooks): IndexingWorker.Driver {
   const manager = new CodeIndexManager(directory, root)
   const progress = manager.onProgressUpdate.on(() => hooks.status(normalizeIndexingStatus(manager)))
-  const telemetry = manager.onTelemetry.on(hooks.telemetry)
+  const telemetry = manager.onTelemetry.on((event) => hooks.telemetry?.(event))
 
   return {
     async init(input) {

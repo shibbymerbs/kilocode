@@ -15,8 +15,6 @@ import {
   type MarketplaceActionContext,
 } from "./services/marketplace/actions"
 import type { InstallMarketplaceItemOptions, MarketplaceItem } from "./services/marketplace/types"
-import { TelemetryProxy } from "./services/telemetry"
-import { TelemetryEventName } from "./services/telemetry/types"
 
 interface MarketplaceMessage {
   type?: string
@@ -226,9 +224,6 @@ export class MarketplacePanelProvider implements vscode.Disposable {
         return
       case "openExternal":
         this.openExternal(msg.url)
-        return
-      case "telemetry":
-        if (msg.event) TelemetryProxy.capture(msg.event as TelemetryEventName, msg.properties)
         return
     }
   }

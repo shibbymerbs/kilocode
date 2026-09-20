@@ -48,7 +48,6 @@ test("warm npm launcher and real CLI startup stay within budget", async () => {
     await fs.mkdir(env[key], { recursive: true })
   }
   Object.assign(env, {
-    KILO_TELEMETRY_LEVEL: "off",
     DO_NOT_TRACK: "1",
     OTEL_SDK_DISABLED: "true",
     KILO_DISABLE_MODELS_FETCH: "1",

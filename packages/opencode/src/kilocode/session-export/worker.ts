@@ -75,7 +75,6 @@ scope.onmessage = (event) => {
         endpoint: resolveEndpoint({
           endpoint: msg.endpoint,
           env: process.env.KILO_SESSION_EXPORT_INGEST,
-          allowCustom: msg.allowCustomEndpoint || process.env.KILO_SESSION_EXPORT_ALLOW_CUSTOM_INGEST === "1",
         }),
         fetch: globalThis.fetch,
         reportTelemetry: (item) => scope.postMessage(item),
